@@ -1,0 +1,86 @@
+//here is my Android Java based code (How to get Currently signed In User data from firebase real time database)
+//i have taken Help from this YouTube Video Lecture & modified it to work:https://www.youtube.com/watch?v=8FN0Itw28LE&ab_channel=AtifPervaiz
+
+
+
+public class donor_profile extends AppCompatActivity {
+
+    //firebase
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    //views from xml
+    TextView profile_name,profile_age,profile_bgroup,profile_gender,profile_phone,profile_email,profile_showsLocation;
+    TextView tvOnlineOffline;
+    Switch aSwitch;
+    String sStatus="online";
+
+
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_donor_profile);
+
+
+
+         //init firebase
+         firebaseAuth=FirebaseAuth.getInstance();
+        firebaseUser=firebaseAuth.getCurrentUser();
+         firebaseDatabase=FirebaseDatabase.getInstance();
+         databaseReference=firebaseDatabase.getReference("Donor");
+
+         //init views
+        profile_name =findViewById(R.id.profile_name);
+        profile_age = findViewById(R.id.profile_age);
+        profile_bgroup = findViewById(R.id.profile_bgroup);
+        profile_gender = findViewById(R.id.profile_gender);
+        profile_phone = findViewById(R.id.profile_phone);
+        profile_email = findViewById(R.id.profile_email);
+        //location
+        profile_showsLocation = findViewById(R.id.profile_showsLocation);
+                // Status
+                tvOnlineOffline = (TextView) findViewById(R.id.tvOnlineOffline);
+                aSwitch = (Switch) findViewById(R.id.swtich_onlineOffline);
+
+        Query query=databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot Snapshot) {
+                //check until required data get
+                for (DataSnapshot ds : Snapshot.getChildren()) {
+                    //get data
+                    String name = "" + ds.child("Name").getValue();
+                    String age = "" + ds.child("Age").getValue();
+                    String bgroup = "" + ds.child("Blood Group").getValue();
+                    String gender = "" + ds.child("Gender").getValue();
+                    String phone = "" + ds.child("Phone").getValue();
+                    String email = "" + ds.child("Email").getValue();
+                    //String showsLocation=""+ ds.child("Location").getValue();
+
+                    //set data
+                    profile_name.setText(name);
+                    profile_age.setText(age);
+                    profile_bgroup.setText(bgroup);
+                    profile_gender.setText(gender);
+                    profile_phone.setText(phone);
+                    profile_email.setText(email);
+                    try {
+
+                    }catch (Exception ex){
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+}
